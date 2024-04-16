@@ -1,3 +1,5 @@
 wyszukiwarka informacji: phind
 biblioteki warte uwagi:
 subprocess
+Biblioteka newPing (repo Projekt_KARR) https://github.com/InteligentneSystemyAutonomiczneIIS
+komendy gotowe z newPing-obsluga speed i direction juz jest
