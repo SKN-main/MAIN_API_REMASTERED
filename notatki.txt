@@ -3,3 +3,6 @@ biblioteki warte uwagi:
 subprocess
 Biblioteka newPing (repo Projekt_KARR) https://github.com/InteligentneSystemyAutonomiczneIIS
 komendy gotowe z newPing-obsluga speed i direction juz jest
+
+int parseMotorsCommand(String command)->przetwarza przekazanego stringa na moc (-100 do +100)-zwraca tę wartość. Dodatkowo wywala błędy gdy power=0 i kierunek jazdy=stop.
+
