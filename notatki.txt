@@ -12,3 +12,29 @@ int parseMotorsCommand(String command)->przetwarza przekazanego stringa na moc (
 Jak łączy się komputerek z silnikiem?
 port usb czy rs232 (szeregowo)
 
+
+Funkcje:
+-help
+-selftest
+-distance - zwraca odległość w cm z sensorów
+- mD p - moc silnika
+- sD p - kierunek/moc skrętu kół
+
+
+Basically:
+Napisać skrypt w pyhthonie, który stworzy plik (chyba JSON najlepszy) 
+i będzie przesyłał tam informacje z send_to_car a potem zrobić zeby C++ to odcztytał i wrzucił do funckji loop
+
+
+Format Komunikatu:
+"{prędkość};
+{skręt_kół};
+{odczyt_1_czujnika_odległości};
+{odczyt_2_czujnika_odległości};
+(...);
+{odczyt_n_czujnika_odległości}; 
+{odczyt_akcelerometru}"
+
+
+
+Z send_to_cara tworzymy JSONa 

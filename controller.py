@@ -1,6 +1,8 @@
 import sys
 import threading
 
+import json
+
 import serial
 
 
@@ -10,9 +12,10 @@ class Controller:
         self._current_speed = 0
         self._output = output
         self._serial = serial.Serial(port=port, baudrate=115200, timeout=0.05)
+        
         self._serial.flushInput()
         self._serial.flushOutput()
-
+        
         self.turn = 0
         self.speed = 0
 
@@ -98,14 +101,8 @@ class Controller:
 
 
 if __name__ == '__main__':
-    from time import sleep
 
-    controller = Controller()
-    controller.help()
-    sleep(2)
-    print(controller)
-    controller.speed = 20
-    controller.turn = 10
-    sleep(1)
-    print(controller)
-    controller.stop()
+    while True:
+        # odczyt z C++
+
+        # Algorytmy AI działają na koniec
