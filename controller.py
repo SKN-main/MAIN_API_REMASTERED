@@ -1,7 +1,7 @@
 import sys
 import threading
 
-import json
+# import json
 
 import serial
 
@@ -101,8 +101,4 @@ class Controller:
 
 
 if __name__ == '__main__':
-
-    while True:
-        # odczyt z C++
-
-        # Algorytmy AI działają na koniec
+    print()
