@@ -38,3 +38,13 @@ Format Komunikatu:
 
 
 Z send_to_cara tworzymy JSONa 
+
+
+
+
+
+# jak otrzymujemy dane z C++
+
+# jak najlepiej zmierzyć prędkość
+
+# 

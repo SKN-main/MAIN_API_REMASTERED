@@ -1,20 +1,13 @@
 import sys
 import threading
-
 import json
-
-import serial
 
 
 class Controller:
-    def __init__(self, output=sys.stdout, port='/dev/ttyACM0'):
+    def __init__(self, output=sys.stdout):
         self._current_turn = 0
         self._current_speed = 0
         self._output = output
-        self._serial = serial.Serial(port=port, baudrate=115200, timeout=0.05)
-
-        self._serial.flushInput()
-        self._serial.flushOutput()
 
         self.turn = 0
         self.speed = 0
@@ -26,7 +19,6 @@ class Controller:
         if output is not None:
             threading.Thread(target=self.read, daemon=True).start()
 
-
     def help(self):
         """Print the car's help message to the output."""
         self.send('help\n')
@@ -34,7 +26,6 @@ class Controller:
     def test(self):
         """Run self test. Will move the wheels at full speed!"""
         self.send('selftest\n')
-
 
     """
     In Python, the @property decorator is used to create a property method.
@@ -50,14 +41,20 @@ class Controller:
         """Turn the robot by the specified angle. Positive is counter-clockwise."""
         if angle == self._current_turn:
             return
-        direction = 'L' if angle > 0 else 'R'
+        turn_direction = 'L' if angle > 0 else 'R'
         max_angle = 30
         turn_level_per_degree = 100 / max_angle
         turn_level = int(abs(angle) * turn_level_per_degree)
         turn_level = min(turn_level, 100)
 
-        self.send(f's{direction} {turn_level}\n')
         self._current_turn = min(max(angle, -max_angle), max_angle)
+
+        json_message = json.dumps({
+            'turn_direction': turn_direction,
+            'turn_level': self._current_turn
+            }
+        )
+        self.send(json_message)
 
     @property
     def speed(self):
@@ -71,35 +68,58 @@ class Controller:
         if value == 0:
             self.stop()
             return
-        direction = 'F' if value > 0 else 'R'
+        move_direction = 'F' if value > 0 else 'R'
         max_speed = 100
         speed_level = int(abs(value) * 100 / max_speed)
         speed_level = min(speed_level, 100)
 
-        self.send(f'm{direction} {speed_level}\n')
+        # Constraint the speed to the [-max_speed; max_speed] range
         self._current_speed = min(max(value, -max_speed), max_speed)
 
+        json_message = json.dumps({
+            'move_direction': move_direction,
+            'speed_level': self._current_speed
+            }
+        )
+        self.send(json_message)
+
     def stop(self):
-        self.send('mS 0\n')
+        """Stop the car."""
         self._current_speed = 0
 
-    def __del__(self):
-        self._serial.close()
+        json_message = json.dumps({
+            'direction': 'S',
+            'speed_level': 0
+            }
+        )
+        self.send(json_message)
 
     def send(self, packet):
         """Send a packet to the controller directly. Low-level."""
-        packet_bytes = bytes(packet, 'utf-8')
-        self._serial.write(packet_bytes)
+        self._output.write(packet)
 
     def read(self):
-        while True:
-            data = self._serial.readline()
-            if data:
-                self._output.write(data.decode('utf-8'))
+        """Read the serial port and parse incoming packets."""
+        # while True:
+        # example data
+        data = b'10;0;23;43;130;0\n'
+        if data:
+            data = data.decode('utf-8').split(';')
+            speed = data[0]
+            turn = data[1]
+            distance_sensors = data[2:5]
+            accelerometer = data[5]
+            print(f'speed: {speed}, turn: {turn}, '
+                  f'distance_sensors[0]: {distance_sensors[0]}, '
+                  f'distance_sensors[1]: {distance_sensors[1]}, '
+                  f'distance_sensors[2]: {distance_sensors[2]}, '
+                  f'accelerometer: {accelerometer}')
 
     def __repr__(self):
         return f'Controller(turn={self.turn}, speed={self.speed})'
 
 
 if __name__ == '__main__':
-    print()
+    controller = Controller()
+    controller.turn = 10
+    controller.speed = -50
