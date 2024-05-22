@@ -1,7 +1,10 @@
 import sys
 import threading
 import json
+import time
 
+MAX_SPEED = 1
+MIN_SPEED = -1
 
 class Controller:
     def __init__(self, output=sys.stdout):
@@ -9,8 +12,10 @@ class Controller:
         self._current_speed = 0
         self._output = output
 
+
         self.turn = 0
         self.speed = 0
+        self.sensor_data = [0, 0, 0]
 
         """This code creates a new thread that will run the self.read method in the background.
         The main program will continue execution without waiting for the self.read method to finish.
@@ -27,11 +32,7 @@ class Controller:
         """Run self test. Will move the wheels at full speed!"""
         self.send('selftest\n')
 
-    """
-    In Python, the @property decorator is used to create a property method.
-    A property method acts like an attribute but provides more control over how the
-    value is accessed and potentially modified.
-    """
+    
     @property
     def turn(self):
         return self._current_turn
@@ -69,12 +70,12 @@ class Controller:
             self.stop()
             return
         move_direction = 'F' if value > 0 else 'R'
-        max_speed = 100
-        speed_level = int(abs(value) * 100 / max_speed)
-        speed_level = min(speed_level, 100)
+    
+        speed_level = int(abs(value))
+        speed_level = min(speed_level, MAX_SPEED)
 
         # Constraint the speed to the [-max_speed; max_speed] range
-        self._current_speed = min(max(value, -max_speed), max_speed)
+        self._current_speed = min(max(value, -MAX_SPEED), MAX_SPEED)
 
         json_message = json.dumps({
             'move_direction': move_direction,
@@ -96,24 +97,31 @@ class Controller:
 
     def send(self, packet):
         """Send a packet to the controller directly. Low-level."""
+        print(f'Sent: ')
         self._output.write(packet)
+        print(f'\n')
 
     def read(self):
         """Read the serial port and parse incoming packets."""
-        # while True:
-        # example data
-        data = b'10;0;23;43;130;0\n'
-        if data:
-            data = data.decode('utf-8').split(';')
-            speed = data[0]
-            turn = data[1]
-            distance_sensors = data[2:5]
-            accelerometer = data[5]
-            print(f'speed: {speed}, turn: {turn}, '
-                  f'distance_sensors[0]: {distance_sensors[0]}, '
-                  f'distance_sensors[1]: {distance_sensors[1]}, '
-                  f'distance_sensors[2]: {distance_sensors[2]}, '
-                  f'accelerometer: {accelerometer}')
+        while True:
+            # example data
+            time.sleep(1)
+            data = {
+                'speed': controller.speed,
+                'turn': controller.turn,
+                'distance_sensors': [3, 4, 5],
+                'accelerometer': 123
+            }
+            if data:
+                speed = data['speed']
+                turn = data['turn']
+                distance_sensors = data['distance_sensors']
+                accelerometer = data['accelerometer']
+                print(f'speed: {speed}, turn: {turn}, '
+                    f'distance_sensors[0]: {distance_sensors[0]}, '
+                    f'distance_sensors[1]: {distance_sensors[1]}, '
+                    f'distance_sensors[2]: {distance_sensors[2]}, '
+                    f'accelerometer: {accelerometer}\n')
 
     def __repr__(self):
         return f'Controller(turn={self.turn}, speed={self.speed})'
@@ -121,5 +129,6 @@ class Controller:
 
 if __name__ == '__main__':
     controller = Controller()
-    controller.turn = 10
-    controller.speed = -50
+    controller.turn = 21
+    controller.speed = -0.1
+    controller.speed = 0.2
