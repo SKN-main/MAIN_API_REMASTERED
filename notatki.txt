@@ -46,3 +46,13 @@ Z send_to_cara tworzymy JSONa
 # jak otrzymujemy dane z C++
 
 # jak najlepiej zmierzyć prędkość
+
+
+
+
+format komunikatu, string slisowany po średnikach.
+
+wartość prędkości  -100, 100 
+
+
+warto
