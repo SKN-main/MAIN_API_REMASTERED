@@ -5,8 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f87f4ff7-d0e1-498f-8bdb-d458139740f9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/MAIN_API_REMASTERED.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/MAIN_API_REMASTERED.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dokumentacja_Komunikacji_Python_1.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/car_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/car_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notatki.txt" beforeDir="false" afterPath="$PROJECT_DIR$/notatki.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,7 +93,7 @@
       <updated>1716472994352</updated>
       <workItem from="1716472994356" duration="4000" />
       <workItem from="1716481499638" duration="1977000" />
-      <workItem from="1716485700618" duration="101000" />
+      <workItem from="1716485700618" duration="1637000" />
     </task>
     <servers />
   </component>
@@ -95,6 +101,6 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/MAIN_API_REMASTERED$car_controller.coverage" NAME="car_controller Coverage Results" MODIFIED="1716482969918" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MAIN_API_REMASTERED$car_controller.coverage" NAME="car_controller Coverage Results" MODIFIED="1716487065864" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

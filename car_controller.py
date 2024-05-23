@@ -12,7 +12,7 @@ class Controller:
         self._output = output
         self.turn = 0
         self.speed = 0
-        self.sensor_data = [0, 0, 0, 0, 0, 0]  # car has 6 sensors
+        self.sensor_data = [0, 0, 0, 0, 0, 0]  # car has 6 sensors (2 front-left, 2 front, 2 front-right)
 
         """This code creates a new thread that will run the self.read method in the background.
         The main program will continue execution without waiting for the self.read method to finish.
@@ -21,13 +21,13 @@ class Controller:
         if output is not None:
             threading.Thread(target=self.read, daemon=True).start()
 
-    def help(self):
-        """Print the car's help message to the output."""
-        self.send('help\n')
-
-    def test(self):
-        """Run self test. Will move the wheels at full speed!"""
-        self.send('selftest\n')
+    # def help(self):
+    #     """Print the car's help message to the output."""
+    #     self.send('help\n')
+    #
+    # def test(self):
+    #     """Run self test. Will move the wheels at full speed!"""
+    #     self.send('selftest\n')
 
     @property
     def turn(self):
@@ -38,15 +38,15 @@ class Controller:
         """Turn the robot by the specified angle. Positive is counter-clockwise."""
         if angle == self._current_turn:
             return
-        turn_direction = 'L' if angle > 0 else 'R'
+
         max_angle = 30
         turn_level_per_degree = 100 / max_angle
         turn_level = int(abs(angle) * turn_level_per_degree)
         turn_level = min(turn_level, 100)
 
-        self._current_turn = min(max(angle, -max_angle), max_angle)
+        self._current_turn = min(max(turn_level, -max_angle), max_angle)
 
-        self.send()
+        self.send(packet='data')
 
     @property
     def speed(self):
@@ -59,22 +59,27 @@ class Controller:
             return
         # Constraint the speed to the [-max_speed; max_speed] range
         self._current_speed = min(max(value, -MAX_SPEED), MAX_SPEED)
-        self.send()
+        self.send(packet='data')
 
-    def send(self, packet=''):
+    def send(self, packet='data'):
         """Send a packet to the controller directly. Low-level."""
-        if packet == '':
+        if packet == 'data':
             packet = (f'{self._current_speed};{self._current_turn};'
                       f'{self.sensor_data[0]};{self.sensor_data[1]};'
                       f'{self.sensor_data[2]};{self.sensor_data[3]};'
-                      f'{self.sensor_data[4]};{self.sensor_data[5]}\n')
+                      f'{self.sensor_data[4]};{self.sensor_data[5]};')
 
         self._output.write(packet)
 
     def read(self):
         """Read the serial port and parse incoming packets."""
+        example_data = '-12;23;50;56;23;32;65;34'
         while True:
-            pass
+            self.speed = int(example_data.split(';')[0])
+            self.turn = int(example_data.split(';')[1])
+            self.sensor_data = [int(x) for x in example_data.split(';')[2:]]
+            self.send()
+            break
 
     def __repr__(self):
         return f'Car(turn={self.turn}, speed={self.speed})'
@@ -82,8 +87,7 @@ class Controller:
 
 if __name__ == '__main__':
     controller = Controller()
-
+    controller.read()
     controller.turn = 21
     controller.speed = -0.1
     controller.speed = 0.2
-    print(controller.__repr__())
