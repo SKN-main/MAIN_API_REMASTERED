@@ -4,8 +4,9 @@ import serial
 
 MAX_SPEED = 100
 MIN_SPEED = -100
-MAX_TURN_LEVEL = 30
-MIN_TURN_LEVEL = -30
+
+MAX_WHEEL_ROTATION = 100
+MIN_WHEEL_ROTATION = -100
 
 
 class Controller:
@@ -42,14 +43,13 @@ class Controller:
         if angle == self._current_wheel_rotation:
             return
 
-        max_angle = 30
-        turn_level_per_degree = 100 / max_angle
+        turn_level_per_degree = 100 / MAX_WHEEL_ROTATION
         wheel_rotation = int(abs(angle) * turn_level_per_degree)
-        wheel_rotation = min(wheel_rotation, 100)
+        wheel_rotation = min(wheel_rotation, MAX_WHEEL_ROTATION)
 
-        self._current_wheel_rotation = min(max(wheel_rotation, -max_angle), max_angle)
+        self._current_wheel_rotation = min(max(wheel_rotation, -MAX_WHEEL_ROTATION), MAX_WHEEL_ROTATION)
 
-        self.send(packet='data')
+        self.send()
 
     @property
     def speed(self):
@@ -63,15 +63,14 @@ class Controller:
         if value == self._current_speed:
             return
         self._current_speed = min(max(value, -MAX_SPEED), MAX_SPEED)
-        self.send(packet='data')
+        self.send()
 
-    def send(self, packet='data'):
+    def send(self):
         """
         Send a packet to the controller directly. Low-level.
         """
         if self._serial:
-            if packet == 'data':
-                packet = f'{self._current_speed};{self._current_wheel_rotation};'
+            packet = f'{self._current_speed};{self._current_wheel_rotation};'
             try:
                 self._serial.write(bytes(packet, 'utf-8'))
             except serial.SerialException as e:
