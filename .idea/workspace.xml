@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f87f4ff7-d0e1-498f-8bdb-d458139740f9" name="Changes" comment="" />
+    <list default="true" id="f87f4ff7-d0e1-498f-8bdb-d458139740f9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/car_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/car_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notatki.txt" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -27,7 +31,7 @@
     &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;Python.car_controller.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;new__data__format&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -89,7 +93,8 @@
       <workItem from="1716494451462" duration="180000" />
       <workItem from="1716560101803" duration="18000" />
       <workItem from="1717671475837" duration="1448000" />
-      <workItem from="1717682681861" duration="4601000" />
+      <workItem from="1717682681861" duration="5263000" />
+      <workItem from="1717691263460" duration="1260000" />
     </task>
     <servers />
   </component>

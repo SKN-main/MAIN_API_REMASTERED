@@ -11,6 +11,17 @@ MAX_WHEEL_ROTATION = 100
 MIN_WHEEL_ROTATION = -100
 
 
+def clamp(value, min_value, max_value):
+    """
+    Clamp a value between a minimum and maximum value.
+    :param value: _current_speed / _current_wheel_rotation
+    :param min_value: MIN_SPEED / MIN_WHEEL_ROTATION
+    :param max_value: MAX_SPEED / MAX_WHEEL_ROTATION
+    :return: constrained value
+    """
+    return max(min(max_value, value), min_value)
+
+
 class Controller:
     def __init__(self, output=sys.stdout, port='/dev/ttyACM0'):
         """
@@ -22,9 +33,6 @@ class Controller:
 
         try:
             self._serial = serial.Serial(port=port, baudrate=115200, timeout=0.05)
-            print("Init completed")
-            self._serial.flushInput()
-            self._serial.flushOutput()
         except serial.SerialException as e:
             print(f"Serial error: {e}")
             self._serial = None
@@ -36,48 +44,49 @@ class Controller:
 
     def turn(self, rotation):
         """
-        Turn the robot by the specified angle. Positive is counter-clockwise.
-        In percentage, 100 is full speed counter-clockwise, -100 is full speed clockwise.
+        Turn the wheels by the specified rotation. Positive is counter-clockwise.
+        The rotation is expressed in percentage, 100 is full counter-clockwise, -100 is full clockwise.
         """
         if rotation == self._current_wheel_rotation:
             return
-        print(f"Turning by {rotation}")
 
-        if rotation < MIN_WHEEL_ROTATION:
-            rotation = MIN_WHEEL_ROTATION
-        elif rotation > MAX_WHEEL_ROTATION:
-            rotation = MAX_WHEEL_ROTATION
+        rotation = clamp(rotation, MIN_WHEEL_ROTATION, MAX_WHEEL_ROTATION)
 
         self._current_wheel_rotation = rotation
 
-        print(f"Setting wheel rotation to {self._current_wheel_rotation}")
         self.send()
 
     def set_speed(self, value):
         """
-        Set the speed of both wheels.
+        Set the speed of the car.
+        Positive is forward, negative is backward.
+        The speed is expressed in percentage, 100 is full speed forward, -100 is full speed backward.
         """
         if value == self._current_speed:
             return
-        self._current_speed = min(max(value, -MAX_SPEED), MAX_SPEED)
+
+        value = clamp(value, MIN_SPEED, MAX_SPEED)
+
+        self._current_speed = value
         self.send()
 
     def send(self):
         """
         Send a packet to the controller directly. Low-level.
+        Sends the information about speed and wheel rotation which user want to apply to car.
         """
         if self._serial:
-            print(f"Sending speed: {self._current_speed}, wheel rotation: {self._current_wheel_rotation}")
             packet = f'{self._current_speed};{self._current_wheel_rotation};\n'
             try:
                 self._serial.write(bytes(packet, 'utf-8'))
-                print("message sent")
             except serial.SerialException as e:
                 print(f"Error writing to serial: {e}")
 
     def read(self):
         """
         Read the serial port and parse incoming packets.
+        The incoming data format:
+        "speed;wheel_rotation;sensor1;sensor2;...;sensor6;\n"
         """
         while True:
             if not self._serial:
@@ -101,6 +110,9 @@ class Controller:
         return f'Car(turn={self._current_wheel_rotation}, speed={self._current_speed}, sensors={self.sensor_data})'
 
     def __del__(self):
+        """
+        When we close the controller, the car is reseted to default values. (speed = 0, wheel_rotation = 0)
+        """
         self.reset_car()
 
     def reset_car(self):
@@ -113,6 +125,7 @@ if __name__ == '__main__':
     controller = Controller()
     print(controller)
 
+    # Tests for the car controller
     while True:
         sleep(0.5)
         controller.turn(100)
