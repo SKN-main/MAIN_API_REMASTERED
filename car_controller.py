@@ -1,5 +1,7 @@
 import sys
 import threading
+from time import sleep
+
 import serial
 
 MAX_SPEED = 100
@@ -20,6 +22,7 @@ class Controller:
 
         try:
             self._serial = serial.Serial(port=port, baudrate=115200, timeout=0.05)
+            print("Init completed")
             self._serial.flushInput()
             self._serial.flushOutput()
         except serial.SerialException as e:
@@ -31,32 +34,26 @@ class Controller:
         if output is not None:
             threading.Thread(target=self.read, daemon=True).start()
 
-    @property
-    def turn(self):
-        return self._current_wheel_rotation
-
-    @turn.setter
-    def turn(self, angle):
+    def turn(self, rotation):
         """
         Turn the robot by the specified angle. Positive is counter-clockwise.
+        In percentage, 100 is full speed counter-clockwise, -100 is full speed clockwise.
         """
-        if angle == self._current_wheel_rotation:
+        if rotation == self._current_wheel_rotation:
             return
+        print(f"Turning by {rotation}")
 
-        turn_level_per_degree = 100 / MAX_WHEEL_ROTATION
-        wheel_rotation = int(abs(angle) * turn_level_per_degree)
-        wheel_rotation = min(wheel_rotation, MAX_WHEEL_ROTATION)
+        if rotation < MIN_WHEEL_ROTATION:
+            rotation = MIN_WHEEL_ROTATION
+        elif rotation > MAX_WHEEL_ROTATION:
+            rotation = MAX_WHEEL_ROTATION
 
-        self._current_wheel_rotation = min(max(wheel_rotation, -MAX_WHEEL_ROTATION), MAX_WHEEL_ROTATION)
+        self._current_wheel_rotation = rotation
 
+        print(f"Setting wheel rotation to {self._current_wheel_rotation}")
         self.send()
 
-    @property
-    def speed(self):
-        return self._current_speed
-
-    @speed.setter
-    def speed(self, value):
+    def set_speed(self, value):
         """
         Set the speed of both wheels.
         """
@@ -70,9 +67,11 @@ class Controller:
         Send a packet to the controller directly. Low-level.
         """
         if self._serial:
-            packet = f'{self._current_speed};{self._current_wheel_rotation};'
+            print(f"Sending speed: {self._current_speed}, wheel rotation: {self._current_wheel_rotation}")
+            packet = f'{self._current_speed};{self._current_wheel_rotation};\n'
             try:
                 self._serial.write(bytes(packet, 'utf-8'))
+                print("message sent")
             except serial.SerialException as e:
                 print(f"Error writing to serial: {e}")
 
@@ -99,11 +98,28 @@ class Controller:
                 print(f"Data conversion error: {e}")
 
     def __repr__(self):
-        return f'Car(turn={self.turn}, speed={self.speed}, sensors={self.sensor_data})'
+        return f'Car(turn={self._current_wheel_rotation}, speed={self._current_speed}, sensors={self.sensor_data})'
+
+    def __del__(self):
+        self.reset_car()
+
+    def reset_car(self):
+        self._current_speed = 0
+        self._current_wheel_rotation = 0
+        self.send()
 
 
 if __name__ == '__main__':
     controller = Controller()
-    controller.turn = 21
-    controller.speed = -10
-    controller.speed = 10
+    print(controller)
+
+    while True:
+        sleep(0.5)
+        controller.turn(100)
+        sleep(0.5)
+        controller.set_speed(-30)
+        sleep(0.5)
+        controller.turn(-100)
+        sleep(0.5)
+        controller.set_speed(30)
+        sleep(0.5)
